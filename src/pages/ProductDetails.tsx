@@ -257,11 +257,11 @@ export default function ProductDetails() {
                   <div className="text-2xl font-bold text-accent mb-6">
                     {service.sale_price ? (
                       <div className="flex flex-col items-end">
-                        <span className="text-2xl text-[#FFD700]">{service.sale_price} جنيه</span>
-                        <span className="text-lg text-gray-400 line-through">{service.price} جنيه</span>
+                        <span className="text-2xl text-[#FFD700]">{service.sale_price} ج</span>
+                        <span className="text-lg text-gray-400 line-through">{service.price} ج</span>
                       </div>
                     ) : (
-                      <span>{service.price} جنيه</span>
+                      <span>{service.price} ج</span>
                     )}
                   </div>
                   <div className="flex gap-4">
@@ -315,11 +315,11 @@ export default function ProductDetails() {
                   <div className="flex flex-col items-end">
                     {item.sale_price ? (
                       <>
-                        <span className="text-xs md:text-sm text-[#FFD700]">{item.sale_price} جنيه</span>
-                        <span className="text-xs text-gray-400 line-through">{item.price} جنيه</span>
+                        <span className="text-xs md:text-sm text-[#FFD700]">{item.sale_price} ج</span>
+                        <span className="text-xs text-gray-400 line-through">{item.price} ج</span>
                       </>
                     ) : (
-                      <span className="text-xs md:text-sm text-accent">{item.price} جنيه</span>
+                      <span className="text-xs md:text-sm text-accent">{item.price} ج</span>
                     )}
                   </div>
                 </div>
