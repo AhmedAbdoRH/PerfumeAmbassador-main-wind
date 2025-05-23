@@ -69,11 +69,11 @@ export default function ProductCard({ title, description, imageUrl, price, saleP
             <div className="flex flex-col items-end">
               {salePrice ? (
                 <>
-                  <span className={`font-bold text-lg text-[${lightGold}]`}>{salePrice} جنيه</span>
-                  <span className="text-sm text-gray-400 line-through">{price} جنيه</span>
+                  <span className={`font-bold text-lg text-[${lightGold}]`}>{salePrice} ج</span>
+                  <span className="text-sm text-gray-400 line-through">{price} ج</span>
                 </>
               ) : (
-                <span className={`font-bold text-lg text-[${lightGold}]`}>{price} جنيه</span>
+                <span className={`font-bold text-lg text-[${lightGold}]`}>{price} ج</span>
               )}
             </div>
             {/* "Contact Now" button */}
