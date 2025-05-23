@@ -149,10 +149,7 @@ export default function Services() {
                   visible: { opacity: 1, y: 0 },
                 }}
               >
-                <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
-                {category.description && (
-                  <p className="text-sm opacity-80">{category.description}</p>
-                )}
+           <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
               </motion.button>
             ))}
           </AnimatePresence>
