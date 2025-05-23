@@ -94,7 +94,7 @@ export default function Services() {
         <div className="w-full h-1 bg-[${lightGold}] mb-8"></div>
 
         {/* Category Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-20">
           <button
             onClick={() => setSelectedCategory(null)}
             className={`p-4 rounded-xl transition-all duration-300 ${
