@@ -63,7 +63,7 @@ export default function Services() {
     return (
       <div className={`py-16 bg-gradient-to-br from-[${brownDark}] to-black`}>
         <div className="container mx-auto px-4 text-center text-secondary">
-          جاري تحميل العطور...
+     
         </div>
       </div>
     );

@@ -64,7 +64,7 @@ export default function Services() {
     return (
       <div className={`py-16 bg-gradient-to-br from-[${brownDark}] to-black`}>
         <div className="container mx-auto px-4 text-center text-secondary">
-          جاري تحميل العطور...
+          
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export default function Services() {
 
         {/* الفئات */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-22"
           initial="hidden"
           animate="visible"
           variants={{
