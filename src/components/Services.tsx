@@ -104,7 +104,7 @@ export default function Services() {
         </motion.h2>
         {/* الفاصل */}
         <motion.div
-          className={`w-full h-1 bg-[${lightGold}] mb-8`}
+          className={`w-full h-1 bg-[${lightGold}] mb-0`}
           variants={{
             hidden: { opacity: 0, scaleX: 0 },
             visible: { opacity: 1, scaleX: 1, transition: { duration: 0.8, ease: 'easeInOut' } },
@@ -113,7 +113,7 @@ export default function Services() {
 
         {/* الفئات */}
         <motion.div
-          className="flex flex-wrap gap-4 justify-center mb-12"
+          className="flex flex-wrap gap-4 justify-center mb-2"
           variants={{
             hidden: { opacity: 0 },
             visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
