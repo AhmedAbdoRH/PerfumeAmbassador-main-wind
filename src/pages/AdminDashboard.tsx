@@ -1952,7 +1952,7 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
                             <label className="block text-sm font-medium text-white mb-1">السعر الأصلي</label>
                             <input
                               type="text"
-                              placeholder=" اضف السعر فقط وسيتم اضافة العملة تلقائيا  )"
+                              placeholder=" اضف السعر فقط وسيتم اضافة العملة تلقائيا  "
                               value={newService.price}
                               onChange={(e) => setNewService({ ...newService, price: e.target.value })}
                               className={`w-full p-3 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#34C759] focus:border-transparent bg-black/20 backdrop-blur-sm border border-white/10 disabled:opacity-70 disabled:cursor-not-allowed`}
@@ -1964,7 +1964,7 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
                             <label className="block text-sm font-medium text-white mb-1">سعر التخفيض (اختياري)</label>
                             <input
                               type="text"
-                              placeholder="السعر بعد التخفيض (مثال: 120 ريال)"
+                              placeholder="اضف السعر فقط وسيتم اضافة العملة تلقائيا لسعر بعد التخفيض (مثال: 120 ريال)"
                               value={newService.sale_price}
                               onChange={(e) => setNewService({ ...newService, sale_price: e.target.value })}
                               className={`w-full p-3 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#34C759] focus:border-transparent bg-black/20 backdrop-blur-sm border border-white/10 disabled:opacity-70 disabled:cursor-not-allowed`}
