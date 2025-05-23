@@ -2020,11 +2020,12 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
                         <div className="flex gap-3">
                           <button
                             type="submit"
-                            className={`flex-grow bg-white text-black py-2.5 px-4 rounded font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black/30 border border-yellow-400 transition-colors flex items-center justify-center gap-2
+                            className={`flex-grow bg-[#34C759] text-white py-2.5 px-4 rounded font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black/30 border border-yellow-400 transition-colors flex items-center justify-center gap-2
                         ${isLoading || (editingService ? false : !selectedCategory)
                           ? 'opacity-50 cursor-not-allowed'
                           : 'hover:bg-yellow-400 hover:text-black'}
                         `}
+                        
                             disabled={isLoading || (editingService ? false : !selectedCategory)}
                           >
                             {editingService ? (
