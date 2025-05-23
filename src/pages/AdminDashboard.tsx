@@ -950,13 +950,6 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
         </div>
       )}
 
-      {/* تنبيه مقاس البنر */}
-      <div className="w-full flex justify-center mb-4">
-        <span className="inline-block bg-yellow-100 text-yellow-800 font-bold rounded px-4 py-2 shadow text-sm border border-yellow-300">
-          المقاس المناسب للبنرات هو <span dir="ltr">1920px</span> عرض × <span dir="ltr">500px</span> ارتفاع
-        </span>
-      </div>
-
       <div className="bg-black/60 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className={`text-2xl font-bold text-[${lightGold}]`}>لوحة التحكم</h1>
@@ -2037,7 +2030,7 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
                             {editingService ? (
                               <> <Save size={20} /> حفظ التعديلات </>
                             ) : (
-                              <> <Plus size={20} /> إضافة منتج </>
+                              <> <Plus size={20} /> حفظ وإضافة المنتج </>
                             )}
                           </button>
                           {editingService && (

@@ -20,22 +20,19 @@ export default function ProductDetails() {
   const [error, setError] = useState<string | null>(null);
   const [suggested, setSuggested] = useState<Service[]>([]);
 
-  // New state to control fade-out of previous image
-  const [prevOpacity, setPrevOpacity] = useState(1);
-
-  // إضافة حالتين للتحكم في انتقال الصور
+  // Image slider states
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentTransform, setCurrentTransform] = useState('translateX(0)');
   const [prevTransform, setPrevTransform] = useState('translateX(0)');
-
-  // استخدم مؤشر منفصل للصورة السابقة
   const [prevImageIndexState, setPrevImageIndexState] = useState<number | null>(null);
-  // تحكم في حالة الانتقال (لضمان عدم تكرار الترانزيشن أو تعارضها)
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Fetch service and suggested products on ID change
   useEffect(() => {
     if (id) {
       fetchService(id);
       fetchSuggested();
+      setCurrentImageIndex(0); // Reset image index when product changes
     }
   }, [id]);
 
@@ -61,7 +58,6 @@ export default function ProductDetails() {
     }
   };
 
-  // جلب منتجات أخرى (بدون شرط القسم)
   const fetchSuggested = async () => {
     const { data } = await supabase
       .from('services')
@@ -74,33 +70,65 @@ export default function ProductDetails() {
   const handleContact = () => {
     if (!service) return;
     const productUrl = window.location.href;
-    const message = `استفسار عن المنتج: ${service.title}
-رابط المنتج: ${productUrl}`;
+    const message = `استفسار عن المنتج: ${service.title}\nرابط المنتج: ${productUrl}`;
     window.open(`https://wa.me/201027381559?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  // التقليب التلقائي للصور في المنتج الرئيسي فقط
+  // Get all images for the main product carousel
   const images: string[] = [
     service?.image_url || '',
     ...(Array.isArray(service?.gallery) ? service.gallery : [])
   ].filter(Boolean);
 
-  const [currentImage, setCurrentImage] = useState(0);
-
+  // Automatic image cycling for the main product
   useEffect(() => {
     if (images.length <= 1) return;
+
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 4500); // فترة 5000 ملي ثانية (5 ثوانٍ)
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 4500); // 4.5 seconds per image
+
     return () => clearInterval(interval);
   }, [images.length]);
 
-  useEffect(() => {
-    setCurrentImage(0);
-  }, [service?.id]);
+  // Image transition effect
+  const previousImageIndex = usePrevious(currentImageIndex);
 
-  // استخدام usePrevious لحفظ مؤشر الصورة السابقة
-  const previousImageIndex = usePrevious(currentImage);
+  useEffect(() => {
+    // Only apply transition if the image actually changed
+    if (previousImageIndex !== undefined && previousImageIndex !== currentImageIndex) {
+      setIsTransitioning(true);
+      setPrevImageIndexState(previousImageIndex); // Store the previous image index
+
+      // Start by positioning the new image to the right and the old image in place
+      setCurrentTransform('translateX(100%)');
+      setPrevTransform('translateX(0)');
+
+      // Use requestAnimationFrame for smoother transition
+      const raf = requestAnimationFrame(() => {
+        setCurrentTransform('translateX(0)'); // New image slides into view
+        setPrevTransform('translateX(-100%)'); // Old image slides out to the left
+      });
+
+      // Cleanup after transition
+      const cleanupTimer = setTimeout(() => {
+        setIsTransitioning(false);
+        setPrevImageIndexState(null); // Remove previous image from DOM after transition
+      }, 1800); // Duration of the transition
+
+      return () => {
+        cancelAnimationFrame(raf);
+        clearTimeout(cleanupTimer);
+      };
+    } else {
+      // Reset transforms if no transition is needed (e.g., initial load or image changed to same image)
+      setCurrentTransform('translateX(0)');
+      setPrevTransform('translateX(0)');
+      setPrevImageIndexState(null);
+      setIsTransitioning(false);
+    }
+  }, [currentImageIndex, previousImageIndex]);
+
 
   // Extracted background styles for reuse
   const backgroundStyles = {
@@ -110,57 +138,7 @@ export default function ProductDetails() {
     backgroundAttachment: 'fixed',
   };
 
-  // تعديل تأثير الانتقال ليكون أبطأ: زيادة مدة الانتقال إلى 3500ms، مع تأخير 1000ms عند بدء التحريك
-  useEffect(() => {
-    // ابدأ بتحريك الصورة الجديدة من اليسار
-    setCurrentTransform('translateX(-100%)');
-    // الصورة السابقة تبدأ من موقعها الحالي
-    setPrevTransform('translateX(0)');
-    const timer = setTimeout(() => {
-      // تحول الصورة الجديدة إلى موقعها النهائي
-      setCurrentTransform('translateX(0)');
-      // تنزلق الصورة السابقة للخارج إلى اليمين
-      setPrevTransform('translateX(100%)');
-    }, 1000); // تأخير 1000ms
-    return () => clearTimeout(timer);
-  }, [currentImage]);
-
-  // عند تغيير الصورة، احفظ المؤشر السابق قبل التغيير
-  useEffect(() => {
-    setPrevImageIndexState(currentImage);
-  }, [currentImage]);
-
-  // انتقال الصور: الصورة الجديدة تبدأ من اليمين وتدخل، والصورة السابقة تخرج لليسار
-  useEffect(() => {
-    // إعدادات الانتقال
-    const DURATION = 1800; // مدة الانتقال الفعلي (ms)
-    const DELAY = 0; // لا حاجة لتأخير إضافي
-
-    // ابدأ الانتقال فقط إذا لم يكن هناك انتقال جارٍ
-    setIsTransitioning(true);
-    setCurrentTransform('translateX(100%)'); // الصورة الجديدة تبدأ خارج الشاشة يميناً
-    setPrevTransform('translateX(0)');      // الصورة السابقة في مكانها
-
-    // استخدم requestAnimationFrame لضمان تطبيق الترانزيشن بعد إعادة الرسم
-    let raf = requestAnimationFrame(() => {
-      setCurrentTransform('translateX(0)');     // الصورة الجديدة تدخل مكانها
-      setPrevTransform('translateX(-100%)');    // الصورة السابقة تخرج يساراً
-    });
-
-    // بعد انتهاء الانتقال، احذف الصورة السابقة من العرض
-    const cleanup = setTimeout(() => {
-      setPrevImageIndexState(null);
-      setIsTransitioning(false);
-    }, DURATION);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(cleanup);
-    };
-  }, [currentImage]);
-
   if (isLoading) {
-    // Added pt-24 here as well for consistency with the main view
     return (
       <div
         className="min-h-screen flex items-center justify-center pt-24"
@@ -172,7 +150,6 @@ export default function ProductDetails() {
   }
 
   if (error || !service) {
-    // Added pt-24 here as well for consistency with the main view
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center gap-4 pt-24"
@@ -191,21 +168,20 @@ export default function ProductDetails() {
 
   return (
     <div className="min-h-screen flex flex-col pt-24" style={backgroundStyles}>
-      {/* This div centers the product card and grows */}
       <div className="flex items-center justify-center flex-grow py-8">
         <div className="container mx-auto px-4 max-w-4xl lg:max-w-5xl">
           <div className="rounded-lg shadow-lg overflow-hidden glass">
             <div className="md:flex">
               <div className="md:w-1/2">
                 <div className="w-full aspect-[4/3] bg-gray-200 relative rounded-t-lg md:rounded-none md:rounded-s-lg overflow-hidden">
-                  {prevImageIndexState !== null && prevImageIndexState !== currentImage && (
+                  {prevImageIndexState !== null && isTransitioning && (
                     <img
                       src={images[prevImageIndexState]}
                       alt=""
                       className="absolute inset-0 w-full h-full object-cover"
                       style={{
                         transform: prevTransform,
-                        zIndex: 10,
+                        zIndex: 10, // Ensure previous image is above current initially
                         transition: isTransitioning
                           ? 'transform 1800ms cubic-bezier(.4,0,.2,1)'
                           : 'none',
@@ -215,12 +191,12 @@ export default function ProductDetails() {
                     />
                   )}
                   <img
-                    src={images[currentImage] || ''}
+                    src={images[currentImageIndex] || ''}
                     alt={service.title}
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{
                       transform: currentTransform,
-                      zIndex: 5,
+                      zIndex: 5, // Ensure current image slides under previous or comes to front
                       transition: isTransitioning
                         ? 'transform 1800ms cubic-bezier(.4,0,.2,1)'
                         : 'none',
@@ -230,15 +206,15 @@ export default function ProductDetails() {
                   />
                   {images.length > 1 && (
                     <>
-                      {/* مؤشرات الصور */}
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                      {/* Image indicators */}
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
                         {images.map((img, idx) => (
                           <button
                             key={img + idx}
                             className={`w-2 h-2 rounded-full border-none transition-colors ease-in-out duration-500 ${
-                              currentImage === idx ? 'bg-white' : 'bg-white/30'
+                              currentImageIndex === idx ? 'bg-white' : 'bg-white/30'
                             }`}
-                            onClick={() => setCurrentImage(idx)}
+                            onClick={() => setCurrentImageIndex(idx)}
                             aria-label={`عرض الصورة رقم ${idx + 1}`}
                             type="button"
                           />
@@ -249,12 +225,12 @@ export default function ProductDetails() {
                 </div>
               </div>
               <div className="md:w-1/2 p-8">
-                <h1 className="text-3xl font-bold mb-4 text-secondary">{service.title}</h1>
-                <p className="text-white mb-6 text-lg leading-relaxed">
-                  {service.description}
-                </p>
+                <h1 className="text-3xl font-bold mb-4 text-secondary text-right">{service.title}</h1>
+                <p className="text-white text-opacity-88 mb-6 text-lg leading-relaxed text-right" style={{ whiteSpace: 'pre-wrap' }}>
+  {service.description}
+</p>
                 <div className="border-t border-gray-700 pt-6 mb-6">
-                  <div className="text-2xl font-bold text-accent mb-6">
+                  <div className="text-2xl font-bold text-accent mb-6 text-right">
                     {service.sale_price ? (
                       <div className="flex flex-col items-end">
                         <span className="text-2xl text-[#FFD700]">{service.sale_price} ج</span>
@@ -280,16 +256,15 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* المنتجات المقترحة */}
+      {/* Suggested Products */}
       {suggested.length > 0 && (
         <div className="container mx-auto px-4 max-w-4xl lg:max-w-5xl mb-8">
-          <h2 className="text-xl font-bold text-secondary mb-4">متوفر لدينا ايضا</h2>
+          <h2 className="text-xl font-bold text-secondary mb-4 text-right">متوفر لدينا ايضا</h2>
           <div
             className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {suggested.map((item) => {
-              // فقط أول صورة (بدون تقليب تلقائي)
               const images: string[] = [
                 item.image_url || '',
                 ...(Array.isArray(item.gallery) ? item.gallery : [])
@@ -311,7 +286,7 @@ export default function ProductDetails() {
                     alt={item.title}
                     className="w-full h-24 md:h-40 object-cover rounded"
                   />
-                  <div className="mt-2 text-sm md:text-base font-bold text-secondary truncate">{item.title}</div>
+                  <div className="mt-2 text-sm md:text-base font-bold text-secondary truncate text-right">{item.title}</div>
                   <div className="flex flex-col items-end">
                     {item.sale_price ? (
                       <>
@@ -326,7 +301,7 @@ export default function ProductDetails() {
               );
             })}
           </div>
-          {/* إضافة ستايل لإخفاء الشريط وتفعيل التمرير التلقائي */}
+          {/* Styles to hide scrollbar */}
           <style>{`
             .hide-scrollbar {
               scrollbar-width: none;
@@ -339,16 +314,15 @@ export default function ProductDetails() {
         </div>
       )}
 
-      {/* This div contains the "Back to Home" button and is placed below the centered content */}
+      {/* Back to Home button */}
       <div className="flex justify-center pb-8">
         <button
           onClick={() => navigate('/')}
-          className="text-secondary hover:text-accent px-4 py-2 rounded-lg border border-secondary hover:border-accent" // Added border for better visibility
+          className="text-secondary hover:text-accent px-4 py-2 rounded-lg border border-secondary hover:border-accent"
         >
           ← العودة للرئيسية
         </button>
       </div>
-
     </div>
   );
-         }
+}
